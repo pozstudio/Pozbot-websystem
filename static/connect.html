@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Sunucuya Bağlan</title>
+  <style>
+    body { background: #111; color: white; text-align: center; font-family: sans-serif; padding-top: 100px; }
+    input, select, button { margin: 10px; padding: 10px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <div id="step1">
+    <label>
+      Sunucu Türü:
+      <select id="edition" onchange="resetSteps()">
+        <option value="java">Java</option>
+        <option value="bedrock">Bedrock</option>
+      </select>
+    </label><br>
+    <input id="host" placeholder="Sunucu IP"> <br>
+    <input id="port" placeholder="Port"> <br>
+    <button onclick="gosterVersiyon()">Devam Et</button>
+  </div>
+
+  <div id="step2" style="display:none;">
+    <select id="version"></select><br>
+    <button onclick="girisYap()">Botu Başlat</button>
+  </div>
+
+  <div id="loading" style="display:none;">
+    <p>Yükleniyor...</p>
+    <div style="border: 5px solid #333; border-top: 5px solid white; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;"></div>
+  </div>
+
+  <script>
+    function resetSteps() {
+      document.getElementById("step2").style.display = "none";
+      document.getElementById("loading").style.display = "none";
+    }
+
+    function gosterVersiyon() {
+      document.getElementById("step1").style.display = "none";
+      document.getElementById("step2").style.display = "block";
+      const edition = document.getElementById("edition").value;
+      fetch("/versions?type=" + edition).then(res => res.json()).then(data => {
+        const ver = document.getElementById("version");
+        ver.innerHTML = "";
+        data.versions.forEach(v => {
+          const o = document.createElement("option");
+          o.value = v; o.text = v;
+          ver.appendChild(o);
+        });
+      });
+    }
+
+    function girisYap() {
+      const host = document.getElementById("host").value;
+      const port = document.getElementById("port").value;
+      const version = document.getElementById("version").value;
+      const edition = document.getElementById("edition").value;
+      document.getElementById("step2").style.display = "none";
+      document.getElementById("loading").style.display = "block";
+      setTimeout(() => {
+        fetch("/start-bot", {
+          method: "POST",
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({host, port, version, edition})
+        }).then(() => location.href = "/panel");
+      }, 3000);
+    }
+  </script>
+
+  <style>
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</body>
+</html>
