@@ -1,0 +1,9 @@
+{
+  "name": "pozbot",
+  "version": "1.0.0",
+  "main": "bot.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mineflayer": "^4.12.0"
+  }
+}
