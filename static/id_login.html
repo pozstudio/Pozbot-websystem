@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>PozBot Giriş</title>
+  <style>
+    body { background: #121212; color: white; font-family: sans-serif; text-align: center; padding-top: 100px; }
+    input, button { padding: 10px; margin: 10px; border-radius: 6px; border: none; }
+  </style>
+</head>
+<body>
+  <h2>Sisteme Giriş</h2>
+  <form onsubmit="giris(event)">
+    <input type="text" id="id" placeholder="12 Haneli Giriş ID'si" required><br>
+    <label><input type="checkbox" id="remember"> Beni Hatırla</label><br>
+    <button type="submit">Giriş Yap</button>
+  </form>
+  <p id="msg"></p>
+
+  <script>
+    const savedId = localStorage.getItem("pozbot_id");
+    if (savedId) {
+      document.getElementById("id").value = savedId;
+      document.getElementById("remember").checked = true;
+    }
+
+    async function giris(e) {
+      e.preventDefault();
+      const id = document.getElementById("id").value;
+      const remember = document.getElementById("remember").checked;
+
+      const res = await fetch("/check-id", {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ id })
+      });
+
+      const result = await res.text();
+      if (result === "ok") {
+        if (remember) localStorage.setItem("pozbot_id", id);
+        window.location.href = "/connect";
+      } else {
+        document.getElementById("msg").innerText = "Geçersiz ID!";
+      }
+    }
+  </script>
+</body>
+</html>
