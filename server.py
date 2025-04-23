@@ -6,14 +6,7 @@ app = Flask(__name__, static_folder='static')
 
 @app.route('/')
 def index():
-    return send_from_directory('static', 'id_login.html')
-
-@app.route('/check-id', methods=['POST'])
-def check_id():
-    data = request.get_json()
-    with open('id.json') as f:
-        real_id = json.load(f).get('access_id')
-    return "ok" if data.get('id') == real_id else "no"
+    return send_from_directory('static', 'connect.html')
 
 @app.route('/connect')
 def connect():
@@ -60,4 +53,4 @@ def versions():
         ]})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run()
